@@ -1,6 +1,6 @@
 {
   "name": "requirebin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "create programs in the browser using modules from NPM",
   "scripts": {
     "start": "node server.js",
