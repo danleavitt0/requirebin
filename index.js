@@ -71,7 +71,7 @@ function initialize () {
   var packagejson = {
     'version': '1.0.0',
     'dependencies': {
-      'cycle-shell': '0.4.6',
+      'cycle-shell': '0.4.7',
       'iframe-console': '0.1.13'
     }
   }
@@ -382,6 +382,12 @@ function initialize () {
 
     keydown(['<meta>', '<enter>']).on('pressed', actions.play)
     keydown(['<control>', '<enter>']).on('pressed', actions.play)
+    keydown(['<meta>', '[']).on('pressed', function (pressed, e) {
+      e.preventDefault()
+    })
+    keydown(['<meta>', ']']).on('pressed', function (pressed, e) {
+      e.preventDefault()
+    })
     keydown(['<meta>', 'S']).on('pressed', function (pressed, e) {
       e.preventDefault()
       actions.play()
