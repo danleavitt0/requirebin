@@ -157,37 +157,34 @@ function initialize () {
     opts = opts || {}
     opts.isPublic = 'isPublic' in opts ? opts.isPublic : true
 
-    doBundle()
-    sandbox.once('bundleEnd', function (bundle) {
-      var gist = {
-        'description': name,
-        'public': opts.isPublic,
-        'files': {
-          'index.js': {
-            'content': entry
-          },
-          'requirebin.md': {
-            'content': 'made with [cycle.sh](http://cycle.sh)'
-          },
-          'package.json': {
-            'content': stringifyPackageJson()
-          }
+    var gist = {
+      'description': name,
+      'public': opts.isPublic,
+      'files': {
+        'index.js': {
+          'content': entry
+        },
+        'requirebin.md': {
+          'content': 'made with [cycle.sh](http://cycle.sh)'
+        },
+        'package.json': {
+          'content': stringifyPackageJson()
         }
       }
+    }
 
-      // the gist can't have empty fields or the github api request will fail
-      if (sandbox.iframeHead) gist.files['page-head.html'] = {'content': sandbox.iframeHead}
-      if (sandbox.iframeBody) gist.files['page-body.html'] = {'content': sandbox.iframeBody}
+    // the gist can't have empty fields or the github api request will fail
+    if (sandbox.iframeHead) gist.files['page-head.html'] = {'content': sandbox.iframeHead}
+    if (sandbox.iframeBody) gist.files['page-body.html'] = {'content': sandbox.iframeBody}
 
-      githubGist.save(gist, id, opts, function (err, newGist) {
-        var newGistId = newGist.id
-        if (newGist.owner && newGist.owner.login) {
-          newGistId = newGist.owner.login + '/' + newGistId
-        }
-        ui.$spinner.addClass('hidden')
-        if (err) ui.tooltipMessage('error', err.toString())
-        if (newGistId && newGist.id !== id) window.location.href = '/?gist=' + newGistId
-      })
+    githubGist.save(gist, id, opts, function (err, newGist) {
+      var newGistId = newGist.id
+      if (newGist.owner && newGist.owner.login) {
+        newGistId = newGist.owner.login + '/' + newGistId
+      }
+      ui.$spinner.addClass('hidden')
+      if (err) ui.tooltipMessage('error', err.toString())
+      if (newGistId && newGist.id !== id) window.location.href = '/?gist=' + newGistId
     })
   }
 
