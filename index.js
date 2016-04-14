@@ -119,13 +119,14 @@ function initialize () {
 
   function doBundle () {
     var addRequires = 'require("iframe-console")()\n\n'
+    var bundle = editors.get('bundle').getValue()
+    if (detective(bundle).indexOf('cycle-shell') < 0) {
+      addRequires = `require("cycle-shell")(main)\n${addRequires}`
+    }
+
     sandbox.iframeHead = editors.get('head').getValue()
     sandbox.iframeBody = editors.get('body').getValue()
     packagejson = packagejson ? window.packagejson : packagejson
-    if (!packagejson.dependencies['cycle-shell']) {
-      addRequires = `require("cycle-shell")(main)\n${addRequires}`
-    }
-    var bundle = editors.get('bundle').getValue()
     sandbox.bundle(addRequires + bundle, packagejson.dependencies)
   }
 
