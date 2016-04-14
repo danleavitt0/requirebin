@@ -71,7 +71,7 @@ function initialize () {
   var packagejson = {
     'version': '1.0.0',
     'dependencies': {
-      'cycle-shell': '0.4.7',
+      'cycle-shell': '0.4.8',
       'iframe-console': '0.1.13'
     }
   }
@@ -118,10 +118,13 @@ function initialize () {
   if (parsedURL.port) currentHost += ':' + parsedURL.port
 
   function doBundle () {
-    var addRequires = 'require("cycle-shell")(main)\nrequire("iframe-console")()\n\n'
+    var addRequires = 'require("iframe-console")()\n\n'
     sandbox.iframeHead = editors.get('head').getValue()
     sandbox.iframeBody = editors.get('body').getValue()
     packagejson = packagejson ? window.packagejson : packagejson
+    if (!packagejson.dependencies['cycle-shell']) {
+      addRequires = `require("cycle-shell")(main)\n${addRequires}`
+    }
     var bundle = editors.get('bundle').getValue()
     sandbox.bundle(addRequires + bundle, packagejson.dependencies)
   }
