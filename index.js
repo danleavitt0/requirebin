@@ -262,9 +262,10 @@ function initialize () {
     save: function (name) {
       if (loggedIn) {
         $('#load-dialog').modal()
-        var Modal = new ModalBody(modalBody)
+        var Modal = new ModalBody(modalBody, '#load-dialog')
         Modal.clear()
-        return Modal.createForm(projectName)
+        Modal.createForm(projectName)
+        return
       }
       ui.$spinner.removeClass('hidden')
       startLogin()
