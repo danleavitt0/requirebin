@@ -46,7 +46,11 @@ Sandbox.prototype.bundle = function (entry, preferredVersions) {
     }
 
     var download = []
+    var local = []
     modules.forEach(function (module) {
+      if (module.match(/^\.\./)) {
+        return local.push(module.split('..')[1])
+      }
       module = module + '@' + (preferredVersions[module] || 'latest')
 
       if (cached[module]) {
@@ -135,20 +139,29 @@ Sandbox.prototype.bundle = function (entry, preferredVersions) {
 
     script = script + entry
 
+    request({
+      method: 'POST',
+      body: JSON.stringify({code: script}),
+      url: 'http://localhost:3000',
+      json: true
+    }, function (err, {response}) {
+      script = 'setTimeout(function(){\n;' + response + '\n;}, 1000)'
+
+      // check for </script> in code to use faster way executing script (https://github.com/maxogden/browser-module-sandbox/issues/13)
+      var scriptTag = script.indexOf('</script>') === -1 ? (
+          '<script type="text/javascript">' + script + '</script>'
+      ) : (
+          '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,' + encodeURIComponent(script) + '"></script>'
+      )
+
+      var body = self.iframeBody + scriptTag
+      var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
+      if (self.name) html.name = self.name
+      self.iframe.setHTML({head: html.head, body: html.body, sandboxAttributes: ['allow-scripts', 'allow-same-origin']})
+      self.emit('bundleEnd', html)
+    })
+
     // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
-    script = 'setTimeout(function(){\n;' + script + '\n;}, 1000)'
 
-    // check for </script> in code to use faster way executing script (https://github.com/maxogden/browser-module-sandbox/issues/13)
-    var scriptTag = script.indexOf('</script>') === -1 ? (
-        '<script type="text/javascript">' + script + '</script>'
-    ) : (
-        '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,' + encodeURIComponent(script) + '"></script>'
-    )
-
-    var body = self.iframeBody + scriptTag
-    var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
-    if (self.name) html.name = self.name
-    self.iframe.setHTML({head: html.head, body: html.body, sandboxAttributes: ['allow-scripts', 'allow-same-origin']})
-    self.emit('bundleEnd', html)
   }
 }

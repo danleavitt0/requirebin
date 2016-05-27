@@ -118,16 +118,16 @@ function initialize () {
   if (parsedURL.port) currentHost += ':' + parsedURL.port
 
   function doBundle () {
-    var addRequires = 'require("iframe-console")()\n\n'
+    // var addRequires = 'require("iframe-console")()\n\n'
     var bundle = editors.get('bundle').getValue()
-    if (detective(bundle).indexOf('cycle-shell') < 0) {
-      addRequires = `require("cycle-shell")(main)\n${addRequires}`
-    }
+    // if (detective(bundle).indexOf('cycle-shell') < 0) {
+    //   addRequires = `require("cycle-shell")(main)\n${addRequires}`
+    // }
 
     sandbox.iframeHead = editors.get('head').getValue()
     sandbox.iframeBody = editors.get('body').getValue()
     packagejson = packagejson ? window.packagejson : packagejson
-    sandbox.bundle(addRequires + bundle, packagejson.dependencies)
+    sandbox.bundle(bundle, packagejson.dependencies)
   }
 
   // todo: move to auth.js
